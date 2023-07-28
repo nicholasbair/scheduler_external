@@ -1,6 +1,7 @@
 defmodule SchedulerExternalWeb.IntegrationLive.Index do
   use SchedulerExternalWeb, :live_view
 
+  alias SchedulerExternal.Integrations.Provider
   alias SchedulerExternal.Integrations
   alias SchedulerExternal.Integrations.Integration
 
@@ -43,5 +44,19 @@ defmodule SchedulerExternalWeb.IntegrationLive.Index do
     {:ok, _} = Integrations.delete_integration(integration)
 
     {:noreply, stream_delete(socket, :integrations, integration)}
+  end
+
+  @impl true
+  def handle_event("start_auth", _params, socket) do
+    {:ok, url} = Provider.auth_url()
+    {:noreply, redirect(socket, external: url)}
+  end
+
+  @impl true
+  def handle_event("start_reauth", %{"id" => id}, socket) do
+    integration = Integrations.get_integration_for_user!(socket.assigns.current_user.id, id)
+    {:ok, url} = Provider.auth_url(integration.email_address)
+
+    {:noreply, redirect(socket, external: url)}
   end
 end

@@ -2,29 +2,16 @@
   Integration <%= @integration.id %>
   <:subtitle>This is a integration record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/integrations/#{@integration}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit integration</.button>
-    </.link>
+    <.link phx-click={JS.push("start_reauth", value: %{id: @integration.id})}>
+    <.button>Reconnect</.button>
+  </.link>
   </:actions>
 </.header>
 
 <.list>
-  <:item title="Valid"><%= @integration.valid %></:item>
-  <:item title="Token"><%= @integration.token %></:item>
-  <:item title="Vendor"><%= @integration.vendor_id %></:item>
+  <:item title="Healthy"><%= @integration.valid? %></:item>
   <:item title="Email address"><%= @integration.email_address %></:item>
   <:item title="Invalid since"><%= @integration.invalid_since %></:item>
 </.list>
 
 <.back navigate={~p"/integrations"}>Back to integrations</.back>
-
-<.modal :if={@live_action == :edit} id="integration-modal" show on_cancel={JS.patch(~p"/integrations/#{@integration}")}>
-  <.live_component
-    module={SchedulerExternalWeb.IntegrationLive.FormComponent}
-    id={@integration.id}
-    title={@page_title}
-    action={@live_action}
-    integration={@integration}
-    patch={~p"/integrations/#{@integration}"}
-  />
-</.modal>
