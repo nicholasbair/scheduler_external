@@ -128,10 +128,6 @@ defmodule SchedulerExternal.Pages do
 
   """
   def change_page(%Page{} = page, attrs \\ %{}) do
-    # raise "hello from change_page"
-
-    # This gets called with every change to the form which runs the validations at the model level
-
     Page.changeset(page, attrs)
   end
 end
