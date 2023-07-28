@@ -15,6 +15,22 @@ defmodule SchedulerExternal.Integrations.Worker do
     check_stale_integrations()
   end
 
+  def perform(%{args: %{"vendor_id" => id, "task" => "mark_integration_invalid"}}) do
+    with {:ok, integration} <- SchedulerExternal.Integrations.get_integration_by_vendor_id(id),
+      {:ok, _} <- SchedulerExternal.Integrations.update_integration(integration, %{integration | valid?: false, invalid_since: DateTime.utc_now()}),
+      pages <- SchedulerExternal.Pages.get_pages_by_integration_id(integration.id) do
+
+        pages
+        |> Enum.each(fn page ->
+          SchedulerExternal.Pages.update_page(page, %{page | valid?: false})
+        end)
+
+        Logger.info("Successfully marked integration with id #{integration.id} as invalid")
+      end
+
+    :ok
+  end
+
   defp check_stale_integrations() do
     Logger.info("Checking for stale integrations")
 

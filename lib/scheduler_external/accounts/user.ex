@@ -9,6 +9,9 @@ defmodule SchedulerExternal.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
+    has_many :integrations, SchedulerExternal.Integrations.Integration
+    has_many :pages, SchedulerExternal.Pages.Page
+
     timestamps()
   end
 
