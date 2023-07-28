@@ -35,6 +35,19 @@ defmodule SchedulerExternal.Integrations do
   end
 
   @doc """
+  Returns the list of valid integrations for a given user.
+
+  ## Examples
+
+      iex> list_valid_integrations_for_user(user_id)
+      [%Integration{}, ...]
+
+  """
+  def list_valid_integrations_for_user(user_id) do
+    Repo.all(from i in Integration, where: i.valid? == true and i.user_id == ^user_id)
+  end
+
+  @doc """
   Gets a single integration.
 
   Raises `Ecto.NoResultsError` if the Integration does not exist.
@@ -88,6 +101,23 @@ defmodule SchedulerExternal.Integrations do
   """
   def get_integration_for_user!(user_id, integration_id) do
     Repo.get_by!(Integration, user_id: user_id, id: integration_id)
+  end
+
+  @doc """
+  Gets a single integration with for the given user_id and integration_id.
+
+  ## Examples
+
+      iex> get_integration_for_user(123, 456)
+      {:ok, %Integration{}}
+
+      iex> get_integration_for_user!(456, 789)
+      {:error, :not_found}
+
+  """
+  def get_integration_for_user(user_id, integration_id) do
+    Repo.get_by(Integration, user_id: user_id, id: integration_id)
+    |> Repo.normalize_one()
   end
 
   @doc """

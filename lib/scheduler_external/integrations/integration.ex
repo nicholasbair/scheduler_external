@@ -12,6 +12,8 @@ defmodule SchedulerExternal.Integrations.Integration do
     field :vendor_id, :string
     field :user_id, :binary_id
 
+    has_many :pages, SchedulerExternal.Pages.Page
+
     timestamps()
   end
 

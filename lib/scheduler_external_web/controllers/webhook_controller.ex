@@ -22,12 +22,10 @@ defmodule SchedulerExternalWeb.WebhookController do
   #   send_resp(conn, 200, "")
   # end
 
-  # TODO: move this to a job and mark the scheduler page as invalid as well
   def receive_webhook(conn, %{"deltas" => [%{"type" => type, "object_data" => %{"id" => id}} | _tail]} = _params) when type in ["account.invalid", "account.stopped"] do
-    # This is a fairly simple operation, so not using an async job
-    with {:ok, integration} <- SchedulerExternal.Integrations.get_integration_by_vendor_id(id) do
-      SchedulerExternal.Integrations.update_integration(integration, %{integration | valid?: false, invalid_since: DateTime.utc_now()})
-    end
+    %{"vendor_id" => id, "task" => "mark_integration_invalid"}
+    |> SchedulerExternal.Integrations.Worker.new()
+    |> Oban.insert!()
 
     send_resp(conn, 200, "")
   end

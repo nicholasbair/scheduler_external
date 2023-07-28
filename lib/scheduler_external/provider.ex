@@ -130,4 +130,68 @@ defmodule SchedulerExternal.Integrations.Provider do
     connection()
     |> ExNylas.ManagementAccounts.delete(id)
   end
+
+  @doc """
+  Create a scheduler page.
+
+  ## Examples
+    iex> create_page(integration, %{"title" => "My Event", "duration" => 60, "location" => "My Office"})
+    {:ok, %ExNylas.Scheduler.Page{
+      access_tokens: ["abcd"],
+      event: %{
+        title: "My Event",
+        duration: 60,
+        location: "My Office"
+      },
+      name: "My Event"
+    }}
+  """
+  # TODO: prob need to collect more stuff here, e.g. timezone
+  def create_page(integration, attrs \\ %{}) do
+
+    integration
+    |> connection_with_token()
+    |> ExNylas.Scheduler.create(page_config(integration.token, attrs["title"], attrs["duration"], attrs["location"]))
+  end
+
+  @doc """
+  Update a scheduler page.
+
+  ## Examples
+    iex> update_page(integration, %{"title" => "My Event", "duration" => 60, "location" => "My Office"})
+    {:ok, %ExNylas.Scheduler.Page{
+      access_tokens: ["abcd"],
+      event: %{
+        title: "My Event",
+        duration: 60,
+        location: "My Office"
+      },
+      name: "My Event"
+    }}
+  """
+  def update_page(integration, attrs \\ %{}) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Scheduler.update(page_config(integration.token, attrs["title"], attrs["duration"], attrs["location"]), attrs["vendor_id"])
+  end
+
+  defp page_config(token, title, duration, location) do
+    %{
+      access_tokens: [token],
+      appearance: %{
+        thank_you_redirect: "http://localhost:4000/bookings/payment"
+      },
+      config: %{
+        event: %{
+          title: title,
+          duration: duration,
+          location: location,
+        },
+        booking: %{
+          confirmation_method: "external",
+        }
+      },
+      name: title,
+    }
+  end
 end
