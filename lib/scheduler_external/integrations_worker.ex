@@ -2,7 +2,7 @@ defmodule SchedulerExternal.Integrations.Worker do
   require Logger
 
   alias SchedulerExternal.Integrations
-  alias SchedulerExternal.Provider
+  alias SchedulerExternal.Integrations.Provider
 
   use Oban.Worker,
     queue: :integrations,

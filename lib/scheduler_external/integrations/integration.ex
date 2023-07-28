@@ -7,8 +7,8 @@ defmodule SchedulerExternal.Integrations.Integration do
   schema "integrations" do
     field :email_address, :string
     field :invalid_since, :utc_datetime
-    field :token, :string
-    field :valid, :boolean, default: false
+    field :token, SchedulerExternal.Encrypted.Binary
+    field :valid?, :boolean, default: false
     field :vendor_id, :string
     field :user_id, :binary_id
 
@@ -18,7 +18,7 @@ defmodule SchedulerExternal.Integrations.Integration do
   @doc false
   def changeset(integration, attrs) do
     integration
-    |> cast(attrs, [:valid, :token, :vendor_id, :email_address, :invalid_since])
-    |> validate_required([:valid, :token, :vendor_id, :email_address, :invalid_since])
+    |> cast(attrs, [:valid?, :token, :vendor_id, :email_address, :invalid_since, :user_id])
+    |> validate_required([:valid?, :token, :vendor_id, :email_address])
   end
 end
