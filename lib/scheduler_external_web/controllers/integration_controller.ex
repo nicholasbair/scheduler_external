@@ -11,6 +11,12 @@ defmodule SchedulerExternalWeb.IntegrationController do
       # Calling revoke here will ensure there is only ever one valid token
       Provider.revoke_all_except(integration)
 
+      # Tell the Nylas scheduler about the new access token
+      Provider.get_pages(integration)
+
+      # Update any pages that were marked as invalid
+      SchedulerExternal.Pages.update_pages_for_integration_as_valid(integration.id)
+
       conn
       |> put_flash(:info, "Authentication successful!")
       |> redirect(to: ~p"/integrations")

@@ -175,6 +175,12 @@ defmodule SchedulerExternal.Integrations.Provider do
     |> ExNylas.Scheduler.update(page_config(integration.token, attrs["title"], attrs["duration"], attrs["location"]), attrs["vendor_id"])
   end
 
+  def get_pages(integration) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Scheduler.list()
+  end
+
   defp page_config(token, title, duration, location) do
     %{
       access_tokens: [token],

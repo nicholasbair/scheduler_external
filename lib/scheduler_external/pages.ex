@@ -27,6 +27,15 @@ defmodule SchedulerExternal.Pages do
     Repo.all(query)
   end
 
+  @doc """
+  Returns the list of pages for a given integration.
+
+  ## Examples
+
+      iex> get_pages_by_integration_id(1234)
+      [%Page{}, ...]
+
+  """
   def get_pages_by_integration_id(id) do
     query = from p in Page,
       where: p.integration_id == ^id,
@@ -88,18 +97,25 @@ defmodule SchedulerExternal.Pages do
 
   """
   def update_page(%Page{} = page, attrs) do
-    # Scheduler API is a PUT, so need to fetch the page first?
     # TODO: if something like cost is changed but nothing else, no need to actually call the API
     with {:ok, integration} <- Integrations.get_integration_for_user(page.user_id, page.integration_id),
       {:ok, _scheduler_page} <- Provider.update_page(integration, attrs) do
-        # attrs = Map.merge(attrs, %{"vendor_id" => scheduler_page.id, "slug" => scheduler_page.slug})
-
         page
         |> Page.changeset(attrs)
         |> Repo.update()
     else _ ->
       {:error, %Ecto.Changeset{}}
     end
+  end
+
+  @doc """
+  Updates all of the pages for a given integration as valid.
+  """
+  def update_pages_for_integration_as_valid(integration_id) do
+    query = from p in Page,
+      where: p.integration_id == ^integration_id and p.valid? == false,
+      update: [set: [valid?: true]]
+    Repo.update_all(query, [])
   end
 
   @doc """
