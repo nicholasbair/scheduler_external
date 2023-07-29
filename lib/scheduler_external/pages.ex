@@ -113,7 +113,7 @@ defmodule SchedulerExternal.Pages do
   """
   def update_pages_for_integration_as_valid(integration_id) do
     query = from p in Page,
-      where: p.integration_id == ^integration_id and p.valid? == false,
+      where: p.integration_id == ^integration_id and not p.valid?,
       update: [set: [valid?: true]]
     Repo.update_all(query, [])
   end
