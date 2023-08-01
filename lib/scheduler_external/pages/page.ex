@@ -14,6 +14,8 @@ defmodule SchedulerExternal.Pages.Page do
     field :slug, :string
     field :duration, :integer
     field :location, :string
+    field :public?, :boolean, default: false
+    field :profile_id, :binary_id
 
     timestamps()
   end
@@ -21,7 +23,7 @@ defmodule SchedulerExternal.Pages.Page do
   @doc false
   def changeset(page, attrs) do
     page
-    |> cast(attrs, [:valid?, :vendor_id, :user_id, :integration_id, :title, :cost, :slug, :duration, :location])
+    |> cast(attrs, [:valid?, :vendor_id, :user_id, :integration_id, :title, :cost, :slug, :duration, :location, :public?, :profile_id])
     |> validate_required([:integration_id, :title, :cost, :duration, :location])
   end
 end

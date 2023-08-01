@@ -1,0 +1,13 @@
+<.header>
+  Listing Services
+</.header>
+
+<.table
+  id="profiles"
+  rows={@streams.profiles}
+  row_click={fn {_id, profile} -> JS.navigate(~p"/service-profiles/#{profile.slug}") end}
+>
+  <:col :let={{_id, profile}} label="Name"><%= profile.name %></:col>
+  <:col :let={{_id, profile}} label="Description"><%= profile.description %></:col>
+  <:col :let={{_id, profile}} label="Slug"><%= profile.slug %></:col>
+</.table>

@@ -1,15 +1,23 @@
 <.header>
-  Listing pages
+  Profile <%= @profile.id %>
+  <:subtitle>This is a profile record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/pages/new"}>
-      <.button>New Page</.button>
+    <.link patch={~p"/profiles/#{@profile}/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit profile</.button>
     </.link>
   </:actions>
 </.header>
 
+<.list>
+  <:item title="Name"><%= @profile.name %></:item>
+  <:item title="Description"><%= @profile.description %></:item>
+  <:item title="Slug"><%= @profile.slug %></:item>
+  <:item title="Public"><%= @profile.public? %></:item>
+</.list>
+
 <.table
   id="pages"
-  rows={@streams.pages}
+  rows={@pages}
   row_click={fn {_id, page} -> JS.navigate(~p"/pages/#{page}") end}
 >
   <:col :let={{_id, page}} label="Title"><%= page.title %></:col>
@@ -17,8 +25,6 @@
   <:col :let={{_id, page}} label="Location"><%= page.location %></:col>
   <:col :let={{_id, page}} label="Cost"><%= page.cost %></:col>
   <:col :let={{_id, page}} label="Slug"><%= page.slug %></:col>
-  <:col :let={{_id, page}} label="Valid"><%= page.valid? %></:col>
-  
   <:action :let={{_id, page}}>
     <div class="sr-only">
       <.link navigate={~p"/pages/#{page}"}>Show</.link>
@@ -35,13 +41,15 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="page-modal" show on_cancel={JS.patch(~p"/pages")}>
+<.back navigate={~p"/profiles"}>Back to profiles</.back>
+
+<.modal :if={@live_action == :edit} id="profile-modal" show on_cancel={JS.patch(~p"/profiles/#{@profile}")}>
   <.live_component
-    module={SchedulerExternalWeb.PageLive.FormComponent}
-    id={@page.id || :new}
+    module={SchedulerExternalWeb.ProfileLive.FormComponent}
+    id={@profile.id}
     title={@page_title}
     action={@live_action}
-    page={@page}
-    patch={~p"/pages"}
+    profile={@profile}
+    patch={~p"/profiles/#{@profile}"}
   />
 </.modal>

@@ -1,0 +1,13 @@
+<.header>
+</.header>
+
+<.modal :if={@live_action in [:new]} id="booking-modal" show on_cancel={JS.patch(~p"/service-profiles")}>
+  <.live_component
+    module={SchedulerExternalWeb.BookingLive.FormComponent}
+    id={@booking.id || :new}
+    title={@page_title}
+    action={@live_action}
+    booking={@booking}
+    patch={~p"/service-profiles"}
+  />
+</.modal>

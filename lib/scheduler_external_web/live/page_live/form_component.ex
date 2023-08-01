@@ -4,6 +4,7 @@ defmodule SchedulerExternalWeb.PageLive.FormComponent do
   alias SchedulerExternal.Pages
 
   @impl true
+  # Don't show the intregation dropdown during edit, as a user cannot change the integration after creation
   def render(%{action: :edit} = assigns) do
     ~H"""
     <div>
@@ -22,6 +23,7 @@ defmodule SchedulerExternalWeb.PageLive.FormComponent do
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:duration]} type="number" label="Duration" />
         <.input field={@form[:location]} type="text" label="Location" />
+        <.input field={@form[:public?]} type="checkbox" label="Public?" />
         <.input field={@form[:cost]} type="number" label="Cost" />
         <.input field={@form[:integration_id]} type="hidden" />
         <.input field={@form[:vendor_id]} type="hidden" />
@@ -52,8 +54,10 @@ defmodule SchedulerExternalWeb.PageLive.FormComponent do
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:duration]} type="number" label="Duration" />
         <.input field={@form[:location]} type="text" label="Location" />
+        <.input field={@form[:public?]} type="checkbox" label="Public?" />
         <.input field={@form[:cost]} type="number" label="Cost" />
         <.input field={@form[:integration_id]} type="select" label="Integration" options={@page.integrations} />
+        <.input field={@form[:profile_id]} type="select" label="Profile" options={@page.profiles} />
         <.input field={@form[:user_id]} type="hidden" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Page</.button>

@@ -149,7 +149,6 @@ defmodule SchedulerExternal.Integrations.Provider do
   """
   # TODO: prob need to collect more stuff here, e.g. timezone
   def create_page(integration, attrs \\ %{}) do
-
     integration
     |> connection_with_token()
     |> ExNylas.Scheduler.create(page_config(integration.token, attrs["title"], attrs["duration"], attrs["location"]))
@@ -199,13 +198,17 @@ defmodule SchedulerExternal.Integrations.Provider do
     |> ExNylas.Scheduler.list()
   end
 
+  def get_page_url(slug), do: "https://schedule.nylas.com/#{slug}"
+
   defp page_config(token, title, duration, location) do
     %{
       access_tokens: [token],
-      appearance: %{
-        thank_you_redirect: "http://localhost:4000/bookings/payment"
-      },
       config: %{
+        appearance: %{
+          thank_you_redirect: "http://localhost:4000/bookings/start",
+          show_autoschedule: false,
+          show_week_view: false,
+        },
         event: %{
           title: title,
           duration: duration,
