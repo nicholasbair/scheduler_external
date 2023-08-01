@@ -2,7 +2,7 @@
   Page <%= @page.id %>
   <:subtitle>This is a page record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/pages/#{@page}/show/edit"} phx-click={JS.push_focus()}>
+    <.link patch={~p"/pages/#{@page}/edit"} phx-click={JS.push_focus()}>
       <.button>Edit page</.button>
     </.link>
   </:actions>

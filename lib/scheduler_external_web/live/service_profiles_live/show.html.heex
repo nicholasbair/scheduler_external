@@ -1,0 +1,24 @@
+<.header>
+  Service <%= @profile.name %>
+  <:subtitle>This is a service record from your database.</:subtitle>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @profile.name %></:item>
+  <:item title="Description"><%= @profile.description %></:item>
+  <:item title="Slug"><%= @profile.slug %></:item>
+</.list>
+
+<.table
+  id="pages"
+  rows={@pages}
+  row_click={fn {_id, page} -> JS.navigate(~p"/services/#{page.slug}") end}
+>
+  <:col :let={{_id, page}} label="Title"><%= page.title %></:col>
+  <:col :let={{_id, page}} label="Duration (minutes)"><%= page.duration %></:col>
+  <:col :let={{_id, page}} label="Location"><%= page.location %></:col>
+  <:col :let={{_id, page}} label="Cost"><%= page.cost %></:col>
+  <:col :let={{_id, page}} label="Slug"><%= page.slug %></:col>
+</.table>
+
+<.back navigate={~p"/service-profiles"}>Back to services</.back>

@@ -11,6 +11,7 @@ defmodule SchedulerExternal.Accounts.User do
 
     has_many :integrations, SchedulerExternal.Integrations.Integration
     has_many :pages, SchedulerExternal.Pages.Page
+    has_many :profiles, SchedulerExternal.Profiles.Profile
 
     timestamps()
   end

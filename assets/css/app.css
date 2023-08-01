@@ -3,3 +3,9 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+html, body {
+    min-height:100%;
+}
+body, main {
+    height:100vh;
+}
