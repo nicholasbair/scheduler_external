@@ -25,8 +25,8 @@ defmodule SchedulerExternalWeb.BookingController do
         },
       ],
       mode: "payment",
-      success_url: url <> "/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: url <> "/cancel?session_id={CHECKOUT_SESSION_ID}"
+      success_url: url <> "/bookings/payment/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: url <> "/bookings/payment/cancel?session_id={CHECKOUT_SESSION_ID}"
     }
 
     event_params = %{
@@ -40,7 +40,7 @@ defmodule SchedulerExternalWeb.BookingController do
 
     with {:ok, %{id: session_id, url: session_url} = _session} <- Stripe.Session.create(params),
       {:ok, event} <- SchedulerExternal.Integrations.Provider.create_event(integration, event_params),
-        {:ok, _booking} <- SchedulerExternal.Bookings.update_booking(booking, %{session_id: session_id, vendor_id: event.id, vendor_job_id: event.job_status_id}) do
+        {:ok, _booking} <- SchedulerExternal.Bookings.update_booking(booking, %{payment_session_id: session_id, vendor_id: event.id, vendor_job_id: event.job_status_id}) do
           conn
           |> put_status(303)
           |> redirect(external: session_url)
@@ -52,14 +52,14 @@ defmodule SchedulerExternalWeb.BookingController do
 
   def success(conn, params) do
     Logger.info("success: #{inspect(params)}")
-    # TODO: update booking as paid
+    with {:ok, booking} <- SchedulerExternal.Bookings.get_booking_by_payment_session(params["session_id"]) do
+      SchedulerExternal.Bookings.update_booking(booking, %{paid: true})
+    end
 
     render(conn, "success.html")
   end
 
   def cancel(conn, params) do
-    Logger.info("cancel: #{inspect(params)}")
-    # TODO: update booking as unpaid?  Or wait for TTL to expire?
     render(conn, "cancel.html")
   end
 
