@@ -1,4 +1,5 @@
 defmodule SchedulerExternalWeb.BookingLive.FormComponent do
+  require Logger
   use SchedulerExternalWeb, :live_component
 
   alias SchedulerExternal.Bookings
@@ -22,6 +23,7 @@ defmodule SchedulerExternalWeb.BookingLive.FormComponent do
         <.input field={@form[:start_time]} type="hidden" />
         <.input field={@form[:end_time]} type="hidden" />
         <.input field={@form[:page_id]} type="hidden" />
+        <.input field={@form[:calendar_id]} type="hidden" />
         <.input field={@form[:first_name]} type="text" label="First name" />
         <.input field={@form[:last_name]} type="text" label="Last name" />
         <.input field={@form[:email_address]} type="text" label="Email address" />
@@ -57,21 +59,6 @@ defmodule SchedulerExternalWeb.BookingLive.FormComponent do
     save_booking(socket, socket.assigns.action, booking_params)
   end
 
-  defp save_booking(socket, :edit, booking_params) do
-    case Bookings.update_booking(socket.assigns.booking, booking_params) do
-      {:ok, booking} ->
-        notify_parent({:saved, booking})
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Booking updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
-  end
-
   defp save_booking(socket, :new, booking_params) do
     case Bookings.create_booking(booking_params) do
       {:ok, booking} ->
@@ -79,8 +66,7 @@ defmodule SchedulerExternalWeb.BookingLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Booking created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+         |> redirect(to: "/bookings/payment?booking_id=#{booking.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

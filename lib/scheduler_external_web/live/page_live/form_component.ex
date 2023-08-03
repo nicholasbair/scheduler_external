@@ -4,7 +4,7 @@ defmodule SchedulerExternalWeb.PageLive.FormComponent do
   alias SchedulerExternal.Pages
 
   @impl true
-  # Don't show the intregation dropdown during edit, as a user cannot change the integration after creation
+  # Don't show the integration dropdown during edit, as a user cannot change the integration after creation
   def render(%{action: :edit} = assigns) do
     ~H"""
     <div>

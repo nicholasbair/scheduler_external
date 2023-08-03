@@ -132,6 +132,32 @@ defmodule SchedulerExternal.Integrations.Provider do
   end
 
   @doc """
+  Create an event.
+
+  ## Examples
+
+      iex> create_event(integration, %{"title" => "My Event", "start_time" => 1234567890, "end_time" => 1234567890, "location" => "My Office", "calendar_id" => "abcd", "email" => "abc@example.com"})
+      {:ok %ExNylas.Event{}}
+  """
+  def create_event(integration, attrs \\ %{}) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Events.create(%{
+        title: attrs.title,
+        when: %{
+          start_time: attrs.start_time,
+          end_time: attrs.end_time
+        },
+        location: attrs.location,
+        calendar_id: attrs.calendar_id,
+        participants: [
+          %{email: attrs.email}
+        ]
+      }
+    )
+  end
+
+  @doc """
   Create a scheduler page.
 
   ## Examples
@@ -181,13 +207,13 @@ defmodule SchedulerExternal.Integrations.Provider do
 
   ## Examples
 
-      iex> delete_page(integration, "abcd")
+      iex> delete_page(integration, page)
       {:ok, %{success: true}}
   """
-  def delete_page(integration, page_id) do
+  def delete_page(integration, page) do
     integration
     |> connection_with_token()
-    |> ExNylas.Scheduler.delete(page_id)
+    |> ExNylas.Scheduler.delete(page.vendor_id)
   end
 
   @doc """
@@ -219,7 +245,7 @@ defmodule SchedulerExternal.Integrations.Provider do
       access_tokens: [token],
       config: %{
         appearance: %{
-          thank_you_redirect: "http://localhost:4000/bookings/callback",
+          thank_you_redirect: SchedulerExternalWeb.Endpoint.url() <> "/bookings/callback",
           show_autoschedule: false,
           show_week_view: false,
         },

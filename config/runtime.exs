@@ -43,9 +43,18 @@ nylas_client_secret =
     environment variable NYLAS_CLIENT_SECRET is missing.
     """
 
+stripe_secret_key =
+  System.get_env("STRIPE_SECRET_KEY") ||
+    raise """
+    environment variable STRIPE_SECRET_KEY is missing.
+    """
+
 config :scheduler_external,
   nylas_client_id: nylas_client_id,
   nylas_client_secret: nylas_client_secret
+
+config :stripity_stripe,
+  api_key: stripe_secret_key
 
 if config_env() == :prod do
   database_url =
