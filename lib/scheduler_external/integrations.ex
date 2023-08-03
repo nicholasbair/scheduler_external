@@ -64,6 +64,23 @@ defmodule SchedulerExternal.Integrations do
   def get_integration!(id), do: Repo.get!(Integration, id)
 
   @doc """
+  Gets a single integration.
+
+  ## Examples
+
+      iex> get_integration(123)
+      {:ok, %Integration{}}
+
+      iex> get_integration(456)
+      {:error, :not_found}
+
+  """
+  def get_integration(id) do
+    Repo.get!(Integration, id)
+    |> Repo.normalize_one()
+  end
+
+  @doc """
   Get a single valid integration by vendor_id.
 
   ## Examples
