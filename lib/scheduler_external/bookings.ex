@@ -38,6 +38,22 @@ defmodule SchedulerExternal.Bookings do
   def get_booking!(id), do: Repo.get!(Booking, id)
 
   @doc """
+  Gets a single booking by payment session id.
+
+  ## Examples
+
+      iex> get_booking_by_payment_session("123")
+      {:ok, %Booking{}}
+
+      iex> get_booking_by_payment_session("456")
+      {:error, :not_found}
+  """
+  def get_booking_by_payment_session(session_id) do
+    Repo.get_by(Booking, payment_session_id: session_id)
+    |> Repo.normalize_one()
+  end
+
+  @doc """
   Creates a booking.
 
   ## Examples

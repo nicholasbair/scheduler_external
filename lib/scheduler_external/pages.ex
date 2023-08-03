@@ -93,7 +93,8 @@ defmodule SchedulerExternal.Pages do
   def create_page(%{"user_id" => user_id, "integration_id" => integration_id} = attrs \\ %{}) do
     with {:ok, integration} <- Integrations.get_integration_for_user(user_id, integration_id),
       {:ok, scheduler_page} <- Provider.create_page(integration, attrs) do
-        attrs = Map.merge(attrs, %{"vendor_id" => scheduler_page.id, "slug" => scheduler_page.slug})
+        calendar_id = scheduler_page.config.calendar_ids[integration.vendor_id]["booking"]
+        attrs = Map.merge(attrs, %{"vendor_id" => scheduler_page.id, "slug" => scheduler_page.slug, "calendar_id" => calendar_id})
 
         %Page{}
         |> Page.changeset(attrs)

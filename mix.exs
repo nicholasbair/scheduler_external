@@ -53,7 +53,8 @@ defmodule SchedulerExternal.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git"},
       {:cloak_ecto, "~> 1.2.0"},
-      {:oban, "~> 2.15.2"}
+      {:oban, "~> 2.15.2"},
+      {:stripity_stripe, "~> 2.17"}
     ]
   end
 

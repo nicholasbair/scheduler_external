@@ -33,8 +33,9 @@ defmodule SchedulerExternalWeb.BookingLive.Index do
   end
 
   @impl true
+  # TODO: this is not used
   def handle_info({SchedulerExternalWeb.BookingLive.FormComponent, {:saved, booking}}, socket) do
-    {:noreply, stream_insert(socket, :bookings, booking)}
+    {:noreply, redirect(socket, to: "/bookings/payment?booking_id=#{booking.id}")}
   end
 
   @impl true

@@ -15,6 +15,7 @@ defmodule SchedulerExternal.Bookings.Booking do
     field :vendor_id, :string
     field :vendor_job_id, :string
     field :page_id, :binary_id
+    field :payment_session_id, :string
 
     timestamps()
   end
@@ -22,7 +23,7 @@ defmodule SchedulerExternal.Bookings.Booking do
   @doc false
   def changeset(booking, attrs) do
     booking
-    |> cast(attrs, [:vendor_id, :start_time, :end_time, :paid, :vendor_job_id, :first_name, :last_name, :email_address, :vendor_confirmed])
-    |> validate_required([:vendor_id, :start_time, :end_time, :paid, :vendor_job_id, :first_name, :last_name, :email_address, :vendor_confirmed])
+    |> cast(attrs, [:vendor_id, :start_time, :end_time, :paid, :vendor_job_id, :first_name, :last_name, :email_address, :vendor_confirmed, :page_id, :payment_session_id])
+    |> validate_required([:start_time, :end_time, :paid, :first_name, :last_name, :email_address, :page_id])
   end
 end
