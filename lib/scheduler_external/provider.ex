@@ -205,7 +205,7 @@ defmodule SchedulerExternal.Integrations.Provider do
       access_tokens: [token],
       config: %{
         appearance: %{
-          thank_you_redirect: "http://localhost:4000/bookings/start",
+          thank_you_redirect: "http://localhost:4000/bookings/callback",
           show_autoschedule: false,
           show_week_view: false,
         },

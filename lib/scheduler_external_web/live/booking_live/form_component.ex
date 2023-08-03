@@ -19,17 +19,14 @@ defmodule SchedulerExternalWeb.BookingLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:vendor_id]} type="text" label="Vendor" />
-        <.input field={@form[:start_time]} type="number" label="Start time" />
-        <.input field={@form[:end_time]} type="number" label="End time" />
-        <.input field={@form[:paid]} type="checkbox" label="Paid" />
-        <.input field={@form[:vendor_job_id]} type="text" label="Vendor job" />
+        <.input field={@form[:start_time]} type="hidden" />
+        <.input field={@form[:end_time]} type="hidden" />
+        <.input field={@form[:page_id]} type="hidden" />
         <.input field={@form[:first_name]} type="text" label="First name" />
         <.input field={@form[:last_name]} type="text" label="Last name" />
         <.input field={@form[:email_address]} type="text" label="Email address" />
-        <.input field={@form[:vendor_confirmed]} type="checkbox" label="Vendor confirmed" />
         <:actions>
-          <.button phx-disable-with="Saving...">Save Booking</.button>
+          <.button phx-disable-with="Saving...">Continue to payment</.button>
         </:actions>
       </.simple_form>
     </div>
