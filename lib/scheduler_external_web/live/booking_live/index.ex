@@ -6,8 +6,7 @@ defmodule SchedulerExternalWeb.BookingLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    # TODO: only show bookings for a given page
-    {:ok, stream(socket, :bookings, Bookings.list_bookings())}
+    {:ok, socket}
   end
 
   @impl true
@@ -21,10 +20,10 @@ defmodule SchedulerExternalWeb.BookingLive.Index do
     |> assign(:booking, Bookings.get_booking!(id))
   end
 
-  defp apply_action(socket, :new, _params) do
+  defp apply_action(socket, :new, params) do
     socket
     |> assign(:page_title, "New Booking")
-    |> assign(:booking, %Booking{})
+    |> assign(:booking, params_to_booking(params))
   end
 
   defp apply_action(socket, :index, _params) do
@@ -44,5 +43,13 @@ defmodule SchedulerExternalWeb.BookingLive.Index do
     {:ok, _} = Bookings.delete_booking(booking)
 
     {:noreply, stream_delete(socket, :bookings, booking)}
+  end
+
+  defp params_to_booking(params) do
+    %Booking{
+      start_time: String.to_integer(params["start_time"]),
+      end_time: String.to_integer(params["end_time"]),
+      page_id: params["page_id"],
+    }
   end
 end

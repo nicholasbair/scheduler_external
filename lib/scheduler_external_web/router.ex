@@ -21,7 +21,6 @@ defmodule SchedulerExternalWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    get "/bookings/start", BookingController, :start
   end
 
   # Other scopes may use custom stacks.
@@ -102,7 +101,8 @@ defmodule SchedulerExternalWeb.Router do
     live "/service-profiles", ServiceProfileLive.Index, :index
     live "/service-profiles/:slug", ServiceProfileLive.Show, :show
 
-    live "/services/:slug", ServiceLive.Show, :show
+    live "/services/:slug", ServiceLive.Parent, :show
+    live "/bookings/callback", ServiceLive.Callback, :callback
 
     live "/bookings/new", BookingLive.Index, :new
   end
