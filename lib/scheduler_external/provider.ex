@@ -177,6 +177,20 @@ defmodule SchedulerExternal.Integrations.Provider do
   end
 
   @doc """
+  Delete a scheduler page.
+
+  ## Examples
+
+      iex> delete_page(integration, "abcd")
+      {:ok, %{success: true}}
+  """
+  def delete_page(integration, page_id) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Scheduler.delete(page_id)
+  end
+
+  @doc """
   List scheduler pages for a given integration from the Nylas API.
 
   ## Examples

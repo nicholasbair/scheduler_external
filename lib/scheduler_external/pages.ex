@@ -150,7 +150,12 @@ defmodule SchedulerExternal.Pages do
 
   """
   def delete_page(%Page{} = page) do
-    Repo.delete(page)
+    with {:ok, integration} <- SchedulerExternal.Integrations.get_integration(page.integration_id),
+      {:ok, _} <- Provider.delete_page(integration, page) do
+        Repo.delete(page)
+    else _ ->
+      {:error, %Ecto.Changeset{}}
+    end
   end
 
   @doc """
