@@ -30,7 +30,7 @@ config :scheduler_external, Oban,
         {"@daily", SchedulerExternal.Integrations.Worker, args: %{"task" => "check_stale_integrations"}}
      ]}
   ],
-  queues: [integrations: 2]
+  queues: [integrations: 2, jobs: 2]
 
 # Configures the mailer
 #
