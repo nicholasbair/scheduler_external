@@ -13,8 +13,7 @@
   <:item title="Duration (minutes)"><%= @page.duration %></:item>
   <:item title="Location"><%= @page.location %></:item>
   <:item title="Cost"><%= @page.cost %></:item>
-  <:item title="Slug"><%= @page.slug %></:item>
-  <:item title="Valid"><%= @page.valid? %></:item>
+  <:item title="Link"><a href={@page.url}> <%= @page.slug %></a></:item>
 </.list>
 
 <.back navigate={~p"/pages"}>Back to pages</.back>

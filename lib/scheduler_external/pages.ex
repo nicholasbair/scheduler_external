@@ -20,6 +20,7 @@ defmodule SchedulerExternal.Pages do
       [%Page{}, ...]
 
   """
+  # TODO: need to get integration status
   def list_pages(user_id) do
     query = from p in Page,
       where: p.user_id == ^user_id,
@@ -129,16 +130,6 @@ defmodule SchedulerExternal.Pages do
   end
 
   @doc """
-  Updates all of the pages for a given integration as valid.
-  """
-  def update_pages_for_integration_as_valid(integration_id) do
-    query = from p in Page,
-      where: p.integration_id == ^integration_id and not p.valid?,
-      update: [set: [valid?: true]]
-    Repo.update_all(query, [])
-  end
-
-  @doc """
   Deletes a page.
 
   ## Examples
@@ -170,5 +161,9 @@ defmodule SchedulerExternal.Pages do
   """
   def change_page(%Page{} = page, attrs \\ %{}) do
     Page.changeset(page, attrs)
+  end
+
+  def slug_to_url(%Page{} = page) do
+    SchedulerExternalWeb.Endpoint.url() <> "/services/" <> page.slug
   end
 end
