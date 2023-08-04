@@ -27,10 +27,11 @@ config :scheduler_external, Oban,
     {Oban.Plugins.Pruner, max_age: 300},
     {Oban.Plugins.Cron,
      crontab: [
-        {"@daily", SchedulerExternal.Integrations.Worker, args: %{"task" => "check_stale_integrations"}}
+        {"@daily", SchedulerExternal.Integrations.Worker, args: %{"task" => "check_stale_integrations"}},
+        {"5 * * * *", SchedulerExternal.Bookings.Worker, args: %{"task" => "check_unpaid_bookings"}}
      ]}
   ],
-  queues: [integrations: 2, jobs: 2]
+  queues: [integrations: 2, jobs: 2, bookings: 2]
 
 # Configures the mailer
 #

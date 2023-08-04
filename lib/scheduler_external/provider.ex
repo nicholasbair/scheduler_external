@@ -1,4 +1,8 @@
 defmodule SchedulerExternal.Integrations.Provider do
+
+  alias SchedulerExternal.Pages.Page
+  alias SchedulerExternal.Bookings.Booking
+
   @moduledoc """
   Wrapper around ExNylas SDK to provide convenience functions for interacting with the Nylas API.
   """
@@ -155,6 +159,64 @@ defmodule SchedulerExternal.Integrations.Provider do
         ]
       }
     )
+  end
+
+  @doc """
+  Create a pending event (intentionally omit participants until payment is made).
+
+  ## Examples
+
+      iex> create_pending_event(integration, %{"title" => "My Event", "start_time" => 1234567890, "end_time" => 1234567890, "location" => "My Office", "calendar_id" => "abcd", "email" => "abc@example.com"})
+      {:ok %ExNylas.Event{}}
+  """
+  def create_pending_event(integration, attrs \\ %{}) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Events.create(%{
+        title: "PENDING PAYMENT - " <> attrs.title,
+        when: %{
+          start_time: attrs.start_time,
+          end_time: attrs.end_time
+        },
+        location: attrs.location,
+        calendar_id: attrs.calendar_id
+      }
+    )
+  end
+
+  @doc """
+  Confirm an event.
+
+  ## Examples
+
+      iex> confirm_event(integration, booking)
+      {:ok, %ExNylas.Event{}}
+  """
+  def confirm_event(integration, %Booking{} = booking, %Page{} = page) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Events.update(booking.vendor_id,
+      %{
+        title: page.title,
+        participants: [
+          %{email: booking.email_address}
+        ]
+      }
+    )
+  end
+
+  @doc """
+  Cancel an event.
+
+  ## Examples
+
+      iex> cancel_event(integration, booking)
+      {:ok, %ExNylas.Event{}}
+  """
+  def cancel_event(integration, %Booking{} = booking) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Events.delete(booking.vendor_id)
   end
 
   @doc """

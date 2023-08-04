@@ -8,6 +8,8 @@ defmodule SchedulerExternal.Bookings do
 
   alias SchedulerExternal.Bookings.Booking
 
+  @pending_booking_ttl_minutes 5
+
   @doc """
   Returns the list of bookings.
 
@@ -19,6 +21,13 @@ defmodule SchedulerExternal.Bookings do
   """
   def list_bookings do
     Repo.all(Booking)
+  end
+
+  def list_unpaid_bookings do
+    query = from b in Booking,
+      where: b.paid == false,
+      order_by: [asc: b.inserted_at]
+    Repo.all(query)
   end
 
   @doc """
@@ -85,6 +94,48 @@ defmodule SchedulerExternal.Bookings do
     %Booking{}
     |> Booking.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Creates a booking with a TTL, creates event on provider, but does not invite user.
+
+  ## Examples
+
+      iex> create_booking_with_ttl(%{field: value})
+      {:ok, %Booking{}}
+
+      iex> create_booking_with_ttl(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_booking_with_ttl(attrs \\ %{}) do
+    with {:ok, page} <- SchedulerExternal.Pages.get_page(attrs["page_id"]),
+         {:ok, integration} <- SchedulerExternal.Integrations.get_integration(page.integration_id) do
+
+          event_params = %{
+            title: page.title,
+            location: page.location,
+            start_time: attrs["start_time"],
+            end_time: attrs["end_time"],
+            email: attrs["email_address"],
+            calendar_id: page.calendar_id,
+          }
+
+          {:ok, event} = SchedulerExternal.Integrations.Provider.create_pending_event(integration, event_params)
+
+          ttl =
+            DateTime.utc_now()
+            |> DateTime.add(@pending_booking_ttl_minutes, :minute)
+
+          {:ok, _booking} =
+            attrs
+            |> Map.put("vendor_job_id", event.job_status_id)
+            |> Map.put("vendor_id", event.id)
+            |> Map.put("ttl", ttl)
+            |> SchedulerExternal.Bookings.create_booking()
+    else {:error, _} ->
+      {:error, %Ecto.Changeset{}}
+    end
   end
 
   @doc """
