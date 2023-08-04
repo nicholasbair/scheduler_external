@@ -163,6 +163,14 @@ defmodule SchedulerExternal.Pages do
     Page.changeset(page, attrs)
   end
 
+  @doc """
+  Returns the public URL for a page.
+
+  ## Examples
+
+      iex> slug_to_url(page)
+      "https://example.com/services/1234"
+  """
   def slug_to_url(%Page{} = page) do
     SchedulerExternalWeb.Endpoint.url() <> "/services/" <> page.slug
   end
