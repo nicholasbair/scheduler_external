@@ -61,6 +61,23 @@ defmodule SchedulerExternal.Pages do
   def get_page!(id), do: Repo.get!(Page, id)
 
   @doc """
+  Gets a single page.
+
+  ## Examples
+
+      iex> get_page(123)
+      {:ok, %Page{}}
+
+      iex> get_page(456)
+      {:error, :not_found}
+
+  """
+  def get_page(id) do
+    Repo.get(Page, id)
+    |> Repo.normalize_one()
+  end
+
+  @doc """
   Gets a single page by slug.
 
   Raises `Ecto.NoResultsError` if the Page does not exist.

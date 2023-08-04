@@ -60,7 +60,7 @@ defmodule SchedulerExternalWeb.BookingLive.FormComponent do
   end
 
   defp save_booking(socket, :new, booking_params) do
-    case Bookings.create_booking(booking_params) do
+    case Bookings.create_booking_with_ttl(booking_params) do
       {:ok, booking} ->
         notify_parent({:saved, booking})
 
