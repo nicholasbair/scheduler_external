@@ -5,7 +5,6 @@ defmodule SchedulerExternal.Pages.Page do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "pages" do
-    field :valid?, :boolean, default: true
     field :vendor_id, :integer
     field :user_id, :binary_id
     field :integration_id, :binary_id
@@ -24,7 +23,7 @@ defmodule SchedulerExternal.Pages.Page do
   @doc false
   def changeset(page, attrs) do
     page
-    |> cast(attrs, [:valid?, :vendor_id, :user_id, :integration_id, :title, :cost, :slug, :duration, :location, :public?, :profile_id, :calendar_id])
+    |> cast(attrs, [:vendor_id, :user_id, :integration_id, :title, :cost, :slug, :duration, :location, :public?, :profile_id, :calendar_id])
     |> validate_required([:integration_id, :title, :cost, :duration, :location])
   end
 end
