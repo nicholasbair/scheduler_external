@@ -54,6 +54,22 @@ defmodule SchedulerExternal.Bookings do
   end
 
   @doc """
+  Gets a single booking by job ID.
+
+  ## Examples
+
+      iex> get_booking_by_job("123")
+      {:ok, %Booking{}}
+
+      iex> get_booking_by_job("456")
+      {:error, :not_found}
+  """
+  def get_booking_by_job(job_id) do
+    Repo.get_by(Booking, vendor_job_id: job_id)
+    |> Repo.normalize_one()
+  end
+
+  @doc """
   Creates a booking.
 
   ## Examples
