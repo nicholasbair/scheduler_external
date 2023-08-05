@@ -14,9 +14,10 @@ defmodule SchedulerExternal.Bookings.Booking do
     field :vendor_confirmed, :boolean, default: false
     field :vendor_id, :string
     field :vendor_job_id, :string
-    field :page_id, :binary_id
     field :payment_session_id, :string
     field :ttl, :utc_datetime
+
+    belongs_to :page, SchedulerExternal.Pages.Page
 
     timestamps()
   end
