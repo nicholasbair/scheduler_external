@@ -1,10 +1,12 @@
 defmodule SchedulerExternalWeb.BookingController do
   use SchedulerExternalWeb, :controller
 
-  alias SchedulerExternal.{Bookings, Pages, Integrations}
-  alias SchedulerExternal.Integrations.{
-    Provider,
-    PaymentProvider
+  alias SchedulerExternal.{
+    Bookings,
+    Pages,
+    Integrations,
+    Integrations.Provider,
+    Integrations.PaymentProvider
   }
 
   def payment(conn, params) do
