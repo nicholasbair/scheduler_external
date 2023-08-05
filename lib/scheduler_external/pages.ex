@@ -5,11 +5,13 @@ defmodule SchedulerExternal.Pages do
 
   import Ecto.Query, warn: false
   require Logger
-  alias SchedulerExternal.Repo
 
-  alias SchedulerExternal.Pages.Page
-  alias SchedulerExternal.Integrations
-  alias SchedulerExternal.Integrations.Provider
+  alias SchedulerExternal.Repo
+  alias SchedulerExternal.{
+    Pages.Page,
+    Integrations,
+    Integrations.Provider
+  }
 
   @doc """
   Returns the list of pages.
