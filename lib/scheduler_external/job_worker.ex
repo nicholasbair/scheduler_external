@@ -5,7 +5,6 @@ defmodule SchedulerExternal.Jobs.Worker do
     queue: :jobs,
     max_attempts: 3
 
-
   @impl true
   def perform(%{args: %{"type" => "job.failed", "object_data" => %{"attributes" => %{"job_status_id" => job_id}}}}) do
     with {:ok, booking} <- SchedulerExternal.Bookings.get_booking_by_job(job_id) do
