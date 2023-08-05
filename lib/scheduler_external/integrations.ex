@@ -76,7 +76,7 @@ defmodule SchedulerExternal.Integrations do
 
   """
   def get_integration(id) do
-    Repo.get!(Integration, id)
+    Repo.get(Integration, id)
     |> Repo.normalize_one()
   end
 

@@ -8,10 +8,10 @@ defmodule SchedulerExternal.Profiles.Profile do
     field :description, :string
     field :name, :string
     field :public?, :boolean, default: false
-    field :user_id, :binary_id
     field :slug, :string
 
     has_many :pages, SchedulerExternal.Pages.Page
+    belongs_to :user, SchedulerExternal.Users.User
 
     timestamps()
   end

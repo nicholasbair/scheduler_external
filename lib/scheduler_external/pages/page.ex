@@ -7,7 +7,6 @@ defmodule SchedulerExternal.Pages.Page do
   schema "pages" do
     field :vendor_id, :integer
     field :user_id, :binary_id
-    field :integration_id, :binary_id
     field :title, :string
     field :cost, :integer
     field :slug, :string
@@ -16,6 +15,9 @@ defmodule SchedulerExternal.Pages.Page do
     field :public?, :boolean, default: false
     field :profile_id, :binary_id
     field :calendar_id, :string
+
+    belongs_to :integration, SchedulerExternal.Integrations.Integration
+    has_many :bookings, SchedulerExternal.Bookings.Booking
 
     timestamps()
   end

@@ -28,8 +28,7 @@ defmodule SchedulerExternal.Bookings.Worker do
   defp check_booking(booking) do
     with true <- expired?(booking),
       {:ok, page} <- Pages.get_page(booking.page_id),
-      {:ok, integration} <- Integrations.get_integration(page.integration_id),
-      {:ok, _success} <- Provider.cancel_event(integration, booking.vendor_id),
+      {:ok, _success} <- Provider.cancel_event(page.integration, booking.vendor_id),
       {:ok, _booking} <- Bookings.delete_booking(booking.id) do
         Logger.info("Successfully deleted expired/unpaid booking with id #{booking.id}")
     end

@@ -11,7 +11,7 @@ defmodule SchedulerExternalWeb.PageLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     page = Pages.get_page!(id)
-    url = SchedulerExternal.Pages.slug_to_url(page)
+    url = Pages.slug_to_url(page)
 
     {:noreply,
      socket

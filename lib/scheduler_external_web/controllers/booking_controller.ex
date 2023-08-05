@@ -1,35 +1,20 @@
 defmodule SchedulerExternalWeb.BookingController do
   use SchedulerExternalWeb, :controller
 
-  require Logger
+  alias SchedulerExternal.{
+    Bookings,
+    Pages,
+    Integrations,
+    Integrations.Provider,
+    Integrations.PaymentProvider
+  }
 
   def payment(conn, params) do
-    Logger.info("payment: #{inspect(params)}")
-
-    booking = SchedulerExternal.Bookings.get_booking!(params["booking_id"])
-    page = SchedulerExternal.Pages.get_page!(booking.page_id)
-    url = SchedulerExternalWeb.Endpoint.url()
-
-    stripe_params = %{
-      line_items: [
-        %{
-          price_data: %{
-            currency: "usd",
-            unit_amount: page.cost * 100, # 100 == $1.00
-            product_data: %{
-              name: page.title,
-            },
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: url <> "/bookings/payment/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: url <> "/bookings/payment/cancel?session_id={CHECKOUT_SESSION_ID}"
-    }
+    booking = Bookings.get_booking!(params["booking_id"])
+    stripe_params = PaymentProvider.build_payment_params(booking.page.cost, booking.page.title)
 
     with {:ok, %{id: session_id, url: session_url} = _session} <- Stripe.Session.create(stripe_params),
-        {:ok, _booking} <- SchedulerExternal.Bookings.update_booking(booking, %{payment_session_id: session_id}) do
+        {:ok, _booking} <- Bookings.update_booking(booking, %{payment_session_id: session_id}) do
           conn
           |> put_status(303)
           |> redirect(external: session_url)
@@ -40,20 +25,22 @@ defmodule SchedulerExternalWeb.BookingController do
   end
 
   def success(conn, params) do
-    with {:ok, booking} <- SchedulerExternal.Bookings.get_booking_by_payment_session(params["session_id"]),
-      {:ok, page} <- SchedulerExternal.Pages.get_page(booking.page_id),
-        {:ok, integration} <- SchedulerExternal.Integrations.get_integration(page.integration_id),
-          {:ok, event} <- SchedulerExternal.Integrations.Provider.confirm_event(integration, booking, page) do
-            SchedulerExternal.Bookings.update_booking(booking, %{paid: true, vendor_job_id: event.job_status_id})
+    with {:ok, booking} <- Bookings.get_booking_by_payment_session(params["session_id"]),
+      {:ok, event} <- Provider.confirm_event(booking.page.integration, booking, booking.page) do
+        Bookings.update_booking(booking, %{paid: true, vendor_job_id: event.job_status_id})
+        render(conn, "success.html")
     end
 
-    render(conn, "success.html")
+    resp(conn, 500, "Something went wrong")
   end
 
-  def cancel(conn, _params) do
-    # TODO: delete booking, delete pending event on Nylas
+  def cancel(conn, params) do
+    with {:ok, booking} <- Bookings.get_booking_by_payment_session(params["session_id"]),
+      {:ok, _} <- Provider.cancel_event(booking.page.integration, booking),
+      {:ok, _} <- Bookings.delete_booking(booking) do
+        render(conn, "cancel.html")
+    end
 
-    render(conn, "cancel.html")
+    resp(conn, 500, "Something went wrong")
   end
-
 end

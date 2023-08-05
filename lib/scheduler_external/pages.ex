@@ -74,6 +74,7 @@ defmodule SchedulerExternal.Pages do
   """
   def get_page(id) do
     Repo.get(Page, id)
+    |> Repo.preload(:integration)
     |> Repo.normalize_one()
   end
 

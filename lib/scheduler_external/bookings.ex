@@ -6,7 +6,13 @@ defmodule SchedulerExternal.Bookings do
   import Ecto.Query, warn: false
   alias SchedulerExternal.Repo
 
-  alias SchedulerExternal.Bookings.Booking
+  alias SchedulerExternal.{
+    Bookings,
+    Bookings.Booking,
+    Integrations,
+    Integrations.Provider,
+    Pages
+  }
 
   @pending_booking_ttl_minutes 5
 
@@ -44,7 +50,10 @@ defmodule SchedulerExternal.Bookings do
       ** (Ecto.NoResultsError)
 
   """
-  def get_booking!(id), do: Repo.get!(Booking, id)
+  def get_booking!(id) do
+    Repo.get!(Booking, id)
+    |> Repo.preload(:page)
+  end
 
   @doc """
   Gets a single booking by payment session id.
@@ -57,8 +66,11 @@ defmodule SchedulerExternal.Bookings do
       iex> get_booking_by_payment_session("456")
       {:error, :not_found}
   """
+  def get_booking_by_payment_session(nil), do: Repo.normalize_one(nil)
+
   def get_booking_by_payment_session(session_id) do
     Repo.get_by(Booking, payment_session_id: session_id)
+    |> Repo.preload(page: :integration)
     |> Repo.normalize_one()
   end
 
@@ -109,8 +121,8 @@ defmodule SchedulerExternal.Bookings do
 
   """
   def create_booking_with_ttl(attrs \\ %{}) do
-    with {:ok, page} <- SchedulerExternal.Pages.get_page(attrs["page_id"]),
-         {:ok, integration} <- SchedulerExternal.Integrations.get_integration(page.integration_id) do
+    with {:ok, page} <- Pages.get_page(attrs["page_id"]),
+         {:ok, integration} <- Integrations.get_integration(page.integration_id) do
 
           event_params = %{
             title: page.title,
@@ -121,7 +133,7 @@ defmodule SchedulerExternal.Bookings do
             calendar_id: page.calendar_id,
           }
 
-          {:ok, event} = SchedulerExternal.Integrations.Provider.create_pending_event(integration, event_params)
+          {:ok, event} = Provider.create_pending_event(integration, event_params)
 
           ttl =
             DateTime.utc_now()
@@ -132,7 +144,7 @@ defmodule SchedulerExternal.Bookings do
             |> Map.put("vendor_job_id", event.job_status_id)
             |> Map.put("vendor_id", event.id)
             |> Map.put("ttl", ttl)
-            |> SchedulerExternal.Bookings.create_booking()
+            |> Bookings.create_booking()
     else {:error, _} ->
       {:error, %Ecto.Changeset{}}
     end
