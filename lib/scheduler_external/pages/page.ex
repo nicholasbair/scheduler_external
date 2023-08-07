@@ -1,4 +1,10 @@
 defmodule SchedulerExternal.Pages.Page do
+  @moduledoc """
+  The Page schema.
+
+  The page represents the scheduler page that is created on Nylas with the addition of having a cost and the ability to be marked as public or hidden.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -6,16 +12,16 @@ defmodule SchedulerExternal.Pages.Page do
   @foreign_key_type :binary_id
   schema "pages" do
     field :vendor_id, :integer
-    field :user_id, :binary_id
     field :title, :string
     field :cost, :integer
     field :slug, :string
     field :duration, :integer
     field :location, :string
     field :public?, :boolean, default: false
-    field :profile_id, :binary_id
     field :calendar_id, :string
 
+    belongs_to :user, SchedulerExternal.Accounts.User
+    belongs_to :profile, SchedulerExternal.Profiles.Profile
     belongs_to :integration, SchedulerExternal.Integrations.Integration
     has_many :bookings, SchedulerExternal.Bookings.Booking
 

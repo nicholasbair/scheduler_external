@@ -1,7 +1,11 @@
 defmodule SchedulerExternal.Integrations.Worker do
+  @moduledoc """
+  The Integrations worker.
+  """
+
   require Logger
 
-  alias SchedulerExternal{
+  alias SchedulerExternal.{
     Integrations,
     Integrations.Provider
   }
@@ -18,8 +22,8 @@ defmodule SchedulerExternal.Integrations.Worker do
   end
 
   def perform(%{args: %{"vendor_id" => id, "task" => "mark_integration_invalid"}}) do
-    with {:ok, integration} <- SchedulerExternal.Integrations.get_integration_by_vendor_id(id),
-      {:ok, _} <- SchedulerExternal.Integrations.update_integration(integration, %{integration | valid?: false, invalid_since: DateTime.utc_now()}) do
+    with {:ok, integration} <- Integrations.get_integration_by_vendor_id(id),
+      {:ok, _} <- Integrations.update_integration(integration, %{integration | valid?: false, invalid_since: DateTime.utc_now()}) do
         Logger.info("Successfully marked integration with id #{integration.id} as invalid")
       end
 
