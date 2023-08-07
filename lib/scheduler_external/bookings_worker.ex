@@ -2,9 +2,8 @@ defmodule SchedulerExternal.Bookings.Worker do
   require Logger
 
   alias SchedulerExternal.{
-    Integrations,
     Integrations.Provider,
-    Pages,
+    Integrations.VendorJobs,
     Bookings
   }
 
@@ -20,19 +19,18 @@ defmodule SchedulerExternal.Bookings.Worker do
   defp check_unpaid_bookings() do
     Logger.info("Checking for unpaid bookings")
 
-    with {:ok, bookings} <- Bookings.list_unpaid_bookings() do
-      Enum.each(bookings, &check_booking/1)
-    end
+    Bookings.list_unpaid_bookings()
+    |> Enum.each(&check_booking/1)
 
     :ok
   end
 
   defp check_booking(booking) do
     with true <- expired?(booking),
-      {:ok, page} <- Pages.get_page(booking.page_id),
-      {:ok, _success} <- Provider.cancel_event(page.integration, booking.vendor_id),
-      {:ok, _booking} <- Bookings.delete_booking(booking.id) do
-        Logger.info("Successfully deleted expired/unpaid booking with id #{booking.id}")
+      {:ok, %{"job_status_id" => vendor_job_id}} <- Provider.cancel_event(booking.page.integration, booking.vendor_id),
+      {:ok, booking} <- Bookings.update_booking(booking, %{status: :cancelled}),
+      {:ok, _vendor_job} <- VendorJobs.create_vendor_job(%{booking_id: booking.id, vendor_id: vendor_job_id, vendor_object_id: booking.vendor_id, action: :delete}) do
+        Logger.info("Successfully cancelled expired/unpaid booking with id #{booking.id}")
     end
   end
 

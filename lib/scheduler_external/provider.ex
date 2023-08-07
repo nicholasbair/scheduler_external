@@ -1,13 +1,12 @@
 defmodule SchedulerExternal.Integrations.Provider do
+  @moduledoc """
+  Wrapper around ExNylas SDK to provide convenience functions for interacting with the Nylas API.
+  """
 
   alias SchedulerExternal.{
     Pages.Page,
     Bookings.Booking
   }
-
-  @moduledoc """
-  Wrapper around ExNylas SDK to provide convenience functions for interacting with the Nylas API.
-  """
 
   @doc """
   Returns the auth URL for the Nylas integration.

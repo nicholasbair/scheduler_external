@@ -1,4 +1,8 @@
 defmodule SchedulerExternal.Integrations.Integration do
+  @moduledoc """
+  The Integration schema.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -10,8 +14,8 @@ defmodule SchedulerExternal.Integrations.Integration do
     field :token, SchedulerExternal.Encrypted.Binary
     field :valid?, :boolean, default: false
     field :vendor_id, :string
-    field :user_id, :binary_id
 
+    belongs_to :user, SchedulerExternal.Accounts.User
     has_many :pages, SchedulerExternal.Pages.Page
 
     timestamps()

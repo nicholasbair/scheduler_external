@@ -9,8 +9,8 @@ defmodule SchedulerExternal.Bookings do
   alias SchedulerExternal.{
     Bookings,
     Bookings.Booking,
-    Integrations,
     Integrations.Provider,
+    Integrations.VendorJobs,
     Pages
   }
 
@@ -34,6 +34,7 @@ defmodule SchedulerExternal.Bookings do
       where: b.paid == false,
       order_by: [asc: b.inserted_at]
     Repo.all(query)
+    |> Repo.preload(page: :integration)
   end
 
   @doc """
@@ -121,8 +122,7 @@ defmodule SchedulerExternal.Bookings do
 
   """
   def create_booking_with_ttl(attrs \\ %{}) do
-    with {:ok, page} <- Pages.get_page(attrs["page_id"]),
-         {:ok, integration} <- Integrations.get_integration(page.integration_id) do
+    with {:ok, page} <- Pages.get_page(attrs["page_id"]) do
 
           event_params = %{
             title: page.title,
@@ -133,18 +133,21 @@ defmodule SchedulerExternal.Bookings do
             calendar_id: page.calendar_id,
           }
 
-          {:ok, event} = Provider.create_pending_event(integration, event_params)
+          {:ok, event} = Provider.create_pending_event(page.integration, event_params)
 
           ttl =
             DateTime.utc_now()
             |> DateTime.add(@pending_booking_ttl_minutes, :minute)
 
-          {:ok, _booking} =
+          {:ok, booking} =
             attrs
-            |> Map.put("vendor_job_id", event.job_status_id)
-            |> Map.put("vendor_id", event.id)
             |> Map.put("ttl", ttl)
+            |> Map.put("vendor_id", event.id)
             |> Bookings.create_booking()
+
+          {:ok, _job} = VendorJobs.create_vendor_job(%{booking_id: booking.id, vendor_object_id: event.id, vendor_id: event.job_status_id})
+
+          {:ok, booking}
     else {:error, _} ->
       {:error, %Ecto.Changeset{}}
     end
