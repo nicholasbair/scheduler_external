@@ -40,6 +40,23 @@ defmodule SchedulerExternal.Bookings do
   @doc """
   Gets a single booking.
 
+  ## Examples
+
+      iex> get_booking(123)
+      {:ok, %Booking{}}
+
+      iex> get_booking(456)
+      {:error, :not_found}
+  """
+  def get_booking(id) do
+    Repo.get(Booking, id)
+    |> Repo.preload(page: :integration)
+    |> Repo.normalize_one()
+  end
+
+  @doc """
+  Gets a single booking.
+
   Raises `Ecto.NoResultsError` if the Booking does not exist.
 
   ## Examples

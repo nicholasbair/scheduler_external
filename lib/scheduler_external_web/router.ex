@@ -21,9 +21,10 @@ defmodule SchedulerExternalWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    get "/bookings/payment", BookingController, :payment
-    get "/bookings/payment/success", BookingController, :success
-    get "/bookings/payment/cancel", BookingController, :cancel
+    get "/bookings/payment", BookingController, :start_payment
+    get "/bookings/payment/success", BookingController, :payment_success
+    get "/bookings/payment/cancel", BookingController, :payment_cancel
+    get "/bookings/:id/cancel", BookingController, :booking_cancel
   end
 
   # Other scopes may use custom stacks.

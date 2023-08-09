@@ -201,9 +201,33 @@ defmodule SchedulerExternal.Integrations.Provider do
         title: page.title,
         participants: [
           %{email: booking.email_address}
-        ]
+        ],
+        description: """
+          To reschedule, click here: #{SchedulerExternalWeb.Endpoint.url()}/bookings/#{booking.id}/reschedule\n
+          To cancel, click here: #{SchedulerExternalWeb.Endpoint.url()}/bookings/#{booking.id}/cancel\n
+        """
       }
     )
+  end
+
+  @doc """
+  Update an event.
+
+  ## Examples
+
+      iex> reschedule_event(integration, booking, %{start_time: 1234567890, end_time: 1234567890})
+      {:ok, %ExNylas.Event{}}
+  """
+  def reschedule_event(integration, %Booking{} = booking, start_time, end_time) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Events.update(booking.vendor_id,
+      %{
+        when: %{
+          start_time: start_time,
+          end_time: end_time
+        }
+      })
   end
 
   @doc """
