@@ -1,4 +1,5 @@
 defmodule SchedulerExternalWeb.Router do
+  alias SchedulerExternalWeb.WebhookController
   use SchedulerExternalWeb, :router
 
   import SchedulerExternalWeb.UserAuth
@@ -13,8 +14,12 @@ defmodule SchedulerExternalWeb.Router do
     plug :fetch_current_user
   end
 
+  get "/webhooks", WebhookController, :challenge
+
   pipeline :api do
     plug :accepts, ["json"]
+
+    post "/webhooks", WebhookController, :receive_webhook
   end
 
   scope "/", SchedulerExternalWeb do
