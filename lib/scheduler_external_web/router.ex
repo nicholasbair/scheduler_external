@@ -30,6 +30,9 @@ defmodule SchedulerExternalWeb.Router do
     get "/bookings/payment/success", BookingController, :payment_success
     get "/bookings/payment/cancel", BookingController, :payment_cancel
     get "/bookings/:id/cancel", BookingController, :booking_cancel
+    get "/bookings/:id/reschedule", BookingController, :booking_reschedule
+    get "/bookings/:id/reschedule-confirmed", BookingController, :booking_reschedule_confirmed
+    get "/bookings/:id/reschedule-failed", BookingController, :booking_reschedule_failed
   end
 
   # Other scopes may use custom stacks.
