@@ -61,4 +61,26 @@ defmodule SchedulerExternalWeb.BookingController do
       resp(conn, 500, "Something went wrong: #{inspect(msg)}")
     end
   end
+
+  # Here the app is allowing the user to reschedule the meeting, even with very little notice, etc.
+  # In a real app, you may want to:
+    # 1. Enforce rules around rescheduling notice/policy
+    # 2. Send an email to the user to confirm the reschedule
+    # 3. Send an email to the vendor to confirm the reschedule
+    # 4. Track if a booking has been rescheduled, number of times, etc.
+  def booking_reschedule(conn, params) do
+    with {:ok, %{status: :confirmed} = booking} <- Bookings.get_booking(params["id"]) do
+      redirect(conn, to: "/services/#{booking.page.slug}?#{URI.encode_query(%{booking_id: booking.id, reschedule: true})}")
+    else {:error, msg} ->
+      resp(conn, 500, "Something went wrong: #{inspect(msg)}")
+    end
+  end
+
+  def booking_reschedule_confirmed(conn, _params) do
+    send_resp(conn, 200, "Booking rescheduled")
+  end
+
+  def booking_reschedule_failed(conn, _params) do
+    send_resp(conn, 200, "Booking reschedule failed")
+  end
 end
