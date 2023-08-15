@@ -137,32 +137,6 @@ defmodule SchedulerExternal.Integrations.Provider do
   end
 
   @doc """
-  Create an event.
-
-  ## Examples
-
-      iex> create_event(integration, %{"title" => "My Event", "start_time" => 1234567890, "end_time" => 1234567890, "location" => "My Office", "calendar_id" => "abcd", "email" => "abc@example.com"})
-      {:ok %ExNylas.Event{}}
-  """
-  def create_event(integration, attrs \\ %{}) do
-    integration
-    |> connection_with_token()
-    |> ExNylas.Events.create(%{
-        title: attrs.title,
-        when: %{
-          start_time: attrs.start_time,
-          end_time: attrs.end_time
-        },
-        location: attrs.location,
-        calendar_id: attrs.calendar_id,
-        participants: [
-          %{email: attrs.email}
-        ]
-      }
-    )
-  end
-
-  @doc """
   Create a pending event (intentionally omit participants until payment is made).
 
   ## Examples
@@ -170,17 +144,17 @@ defmodule SchedulerExternal.Integrations.Provider do
       iex> create_pending_event(integration, %{"title" => "My Event", "start_time" => 1234567890, "end_time" => 1234567890, "location" => "My Office", "calendar_id" => "abcd", "email" => "abc@example.com"})
       {:ok %ExNylas.Event{}}
   """
-  def create_pending_event(integration, attrs \\ %{}) do
+  def create_pending_event(integration, %{title: title, start_time: start_time, end_time: end_time, location: location, calendar_id: calendar_id} = _attrs) do
     integration
     |> connection_with_token()
     |> ExNylas.Events.create(%{
-        title: "PENDING PAYMENT - " <> attrs.title,
+        title: "PENDING PAYMENT - " <> title,
         when: %{
-          start_time: attrs.start_time,
-          end_time: attrs.end_time
+          start_time: start_time,
+          end_time: end_time
         },
-        location: attrs.location,
-        calendar_id: attrs.calendar_id
+        location: location,
+        calendar_id: calendar_id
       }
     )
   end
@@ -194,6 +168,8 @@ defmodule SchedulerExternal.Integrations.Provider do
       {:ok, %ExNylas.Event{}}
   """
   def confirm_event(integration, %Booking{} = booking, %Page{} = page) do
+    url = SchedulerExternalWeb.Endpoint.url()
+
     integration
     |> connection_with_token()
     |> ExNylas.Events.update(booking.vendor_id,
@@ -203,8 +179,8 @@ defmodule SchedulerExternal.Integrations.Provider do
           %{email: booking.email_address}
         ],
         description: """
-          To reschedule, click here: #{SchedulerExternalWeb.Endpoint.url()}/bookings/#{booking.id}/reschedule\n
-          To cancel, click here: #{SchedulerExternalWeb.Endpoint.url()}/bookings/#{booking.id}/cancel\n
+          To reschedule, click here: #{url}/bookings/#{booking.id}/reschedule\n
+          To cancel, click here: #{url}/bookings/#{booking.id}/cancel\n
         """
       }
     )
@@ -260,7 +236,6 @@ defmodule SchedulerExternal.Integrations.Provider do
         name: "My Event"
       }}
   """
-  # TODO: prob need to collect more stuff here, e.g. timezone
   def create_page(integration, attrs \\ %{}) do
     integration
     |> connection_with_token()
@@ -325,6 +300,14 @@ defmodule SchedulerExternal.Integrations.Provider do
     |> ExNylas.Scheduler.list()
   end
 
+  @doc """
+  Get the URL for a scheduler page.
+
+  ## Examples
+
+      iex> get_page_url("abcd")
+      "https://schedule.nylas.com/abcd"
+  """
   def get_page_url(slug), do: "https://schedule.nylas.com/#{slug}"
 
   defp page_config(token, title, duration, location) do

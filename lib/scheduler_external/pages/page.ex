@@ -3,6 +3,7 @@ defmodule SchedulerExternal.Pages.Page do
   The Page schema.
 
   The page represents the scheduler page that is created on Nylas with the addition of having a cost and the ability to be marked as public or hidden.
+  At present, very little information about the page is collected from the user.
   """
 
   use Ecto.Schema

@@ -1,4 +1,11 @@
 defmodule SchedulerExternal.Jobs.Worker do
+  @moduledoc """
+  The Jobs worker.
+
+  This worker is responsible for updating the status for async jobs that are created on Nylas when the app creates and updates events on the organizer's calendar.
+  At present, only the status of the job is updated, but in the future, we can add more logic to this worker to handle other things, such as notifying the user that the job failed, etc.
+  """
+
   require Logger
 
   alias SchedulerExternal.{
