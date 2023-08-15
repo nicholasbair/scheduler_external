@@ -1,4 +1,10 @@
 defmodule SchedulerExternal.Profiles.Profile do
+  @moduledoc """
+  The profile schema.
+
+  A given user can have multiple profiles.  In practice, I'm not sure how often multiple profiles will be used.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -11,7 +17,7 @@ defmodule SchedulerExternal.Profiles.Profile do
     field :slug, :string
 
     has_many :pages, SchedulerExternal.Pages.Page
-    belongs_to :user, SchedulerExternal.Users.User
+    belongs_to :user, SchedulerExternal.Accounts.User
 
     timestamps()
   end

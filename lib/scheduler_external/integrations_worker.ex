@@ -1,6 +1,10 @@
 defmodule SchedulerExternal.Integrations.Worker do
   @moduledoc """
   The Integrations worker.
+
+  This worker is responsible for:
+  - Checking for stale integrations and deleting the associated Nylas account if the integration is stale (e.g. the user has not re-authenicated one week after the integration was marked as invalid)
+  - Marking integrations as invalid if a stopped or invalid webhook is received from Nylas
   """
 
   require Logger

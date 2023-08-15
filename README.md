@@ -10,6 +10,7 @@ Imagine you are using the Nylas scheduler to book meetings with clients, but als
 - Authentication for calendar integrations powered by Nylas
 - Create/update scheduling pages
 - Assign a cost to your scheduler pages
+- The booking process is hosted in an iframe, so the scheduling user stays within the app
 - Booking users are redirected to a payment workflow powered by Stripe
 - During the payment workflow, the organizer's calendar is blocked with an event with a TTL
 - After the payment is confirmed, the user is invited to the meeting

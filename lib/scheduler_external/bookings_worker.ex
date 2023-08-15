@@ -1,4 +1,12 @@
 defmodule SchedulerExternal.Bookings.Worker do
+  @moduledoc """
+  The bookings worker.
+
+  When a user books time on a scheduler page, the application creates an event on the organizers calendar and records a TTL in the app's DB.
+  - If the user doesn't complete the payment process, the TTL will expire and the booking will be cancelled.
+  - If the user completes the payment process, the booking will be updated as confirmed and the user will be invited to the event.
+  """
+
   require Logger
 
   alias SchedulerExternal.{
@@ -12,7 +20,7 @@ defmodule SchedulerExternal.Bookings.Worker do
     max_attempts: 3
 
   @impl true
-  def perform(%{args: %{"task" => "check_stale_integrations"}}) do
+  def perform(%{args: %{"task" => "check_unpaid_bookings"}}) do
     check_unpaid_bookings()
   end
 
