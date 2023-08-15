@@ -28,4 +28,7 @@ My initial focus here was on the happy path, so the app is missing:
 - Make sure you have Postgres installed and running
 - Set environment variables: `CLOAK_KEY`, `NYLAS_CLIENT_ID`, `NYLAS_CLIENT_SECRET`, `STRIPE_SECRET_KEY`
 - Set your authentication redirect in the Nylas dashboard `#{your_base_url}/integrations/callback`
+- Run `mix setup` to install and setup dependencies
+- Start Phoenix server with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+- Now you can visit `localhost:4000` from your browser.
 - With the server running, setup your webhook URL in the Nylas dashboard with the following triggers: `account.invalid`, `account.stopped`, `job.successful`, `job.failed`
